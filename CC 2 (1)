@@ -1,0 +1,11 @@
+0,1,2,3,4,5,6
+Task,Description,John Hannah,Krishnan Guru-Murthy,Nicola Coughlan,Rylan Clark-Neal,Shirley Ballas
+Episode 1: The fastest duck. (1 January 2021),,,,,,
+1,Prize: Best thing to bring to a party.,1,2,4,3,5
+2,Get the biggest thing through the doughnut without breaking it.,2,3,1,5,4
+3,Sculpt the scene on the other side of this wall.,3,4,2,5,1
+4,"Build the lightest tower on this set of scales. You may not move the scales or tape anything to them. You may not tamper with the fan. The fan will be on for one minute every other minute. Your tower must be taller than a wolf at the end, and stand by itself for 10 seconds.",5,4,DQ,DQ,3
+"Bonus: Every time Alex rings his bell, you must pretend you've just had a great idea.",–,–,–,0,–,
+5,"Live: Select an object. If you select the same object as another contestant, you will lose one actual point.",-1,-1,-1,0,-1
+Live: Strike the most balls into the bath using your object. You will lose an actual point for every ball that hits the Taskmaster.,0,0,4,0,5,
+Total,10,12,10,13,17,
