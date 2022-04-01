@@ -34,6 +34,7 @@ def determine_series_names(all_input_dfs):
     count = len(all_input_dfs)
     current = 0
     series_coc_count = 1
+    total_coc_count = 1
     multiplier = 0
     series_names = []
     while current <= count:
@@ -44,17 +45,22 @@ def determine_series_names(all_input_dfs):
             series_coc_count += 1
             if series_coc_count >= 6:
                 series_coc_count = 1
-                series_names.append("COC")
+                series_names.append("COC " + str(total_coc_count))
                 current += 1
                 multiplier += 1
+                total_coc_count += 1
         current += 1
     return series_names
 
 def create_final_raw_csv(dir_path_to_temp_csvs, dir_path_final_csvs):
+    for f in os.listdir(dir_path_final_csvs):
+        os.remove(os.path.join(dir_path_final_csvs, f))
+
     taskmaster_dfs = scrape_tm_details_to_dfs()
     build_temp_csvs(all_dfs=taskmaster_dfs, temp_dir=dir_path_to_temp_csvs)
     series_names = determine_series_names(all_input_dfs=taskmaster_dfs)
     for i, filename in enumerate(os.listdir(dir_path_to_temp_csvs)):
+        print('processing', i, filename, series_names[i])
         f = os.path.join(dir_path_to_temp_csvs, filename)
         if os.path.isfile(f):
             parse_taskmaster_csv(infile=f, series_name=series_names[i], result_path=dir_path_final_csvs)
