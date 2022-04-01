@@ -49,7 +49,12 @@ def get_task_score(contestant, task_description, complete_df):
         '✘': 0,
         '-': 0,
         '–': 0,
-        "DQ": 0
+        "DQ": 0,
+        '-1': -1,
+        '-2': -2,
+        '-3': -3,
+        '-4': -4,
+        '-5': -5
     }
 
     if not score.isdigit():
@@ -57,7 +62,7 @@ def get_task_score(contestant, task_description, complete_df):
         if score in score_translations:
             score = score_translations[score]
         else:
-            print("Error: unhandled score value:", score)
+            print("Error: unhandled score value:", score, task_description)
 
     return score
 
@@ -93,7 +98,7 @@ def generate_end_csv(task_list, contestant_names, provided_series, complete_df):
 
 
     final_result_df = pd.DataFrame(final_task_list)
-    final_result_df.to_csv("Series 1 Task Data.csv")
+    final_result_df.to_csv(f"{provided_series} Task Data.csv")
 
 def parse_taskmaster_csv(infile, series_name):
 
@@ -116,4 +121,4 @@ def parse_taskmaster_csv(infile, series_name):
     generate_end_csv(task_list=series_task_list, contestant_names=series_contestant_names, provided_series=series_name, complete_df=full_df)
 
 
-parse_taskmaster_csv(infile=infile_name, series_name=provided_series)
+# parse_taskmaster_csv(infile=infile_name, series_name=provided_series)

@@ -1,73 +1,62 @@
 
-
-
-# Library for opening url and creating
-# requests
 import urllib.request
- 
-# pretty-print python data structures
 from pprint import pprint
- 
-# for parsing all the tables present
-# on the website
 from html_table_parser.parser import HTMLTableParser
- 
-# for converting the parsed data in a
-# pandas dataframe
 import pandas as pd
+import os
+from parse import parse_taskmaster_csv
  
- 
-# Opens a website and read its
-# binary contents (HTTP Response Body)
+
 def url_get_contents(url):
- 
-    # Opens a website and read its
-    # binary contents (HTTP Response Body)
- 
-    #making request to the website
     req = urllib.request.Request(url=url)
     f = urllib.request.urlopen(req)
- 
-    #reading contents of the website
     return f.read()
- 
-# defining the html contents of a URL.
-xhtml = url_get_contents('https://taskmaster.fandom.com/wiki/Episode_list').decode('utf-8')
- 
-# Defining the HTMLTableParser object
-p = HTMLTableParser()
- 
-# feeding the html contents in the
-# HTMLTableParser object
-p.feed(xhtml)
- 
-# converting the parsed data to
-# dataframe
-print("\n\nPANDAS DATAFRAME\n")
-print(pd.DataFrame(p.tables))
 
-all_dfs = []
+def scrape_tm_details_to_dfs():
+    xhtml = url_get_contents('https://taskmaster.fandom.com/wiki/Episode_list').decode('utf-8')
+    p = HTMLTableParser()
+    p.feed(xhtml)
+    all_dfs = []
+    for i, table in enumerate(p.tables):
+        if i in range(0, 15):
+            all_dfs.append(pd.DataFrame(table))
+    return all_dfs
 
-for i, table in enumerate(p.tables):
-    if i in range(0, 15):
-        all_dfs.append(pd.DataFrame(table))
+def build_temp_csvs(all_dfs, temp_dir):
+    for f in os.listdir(temp_dir):
+        os.remove(os.path.join(temp_dir, f))
+
+    for i, df in enumerate(all_dfs):
+        index_value = "%02d" % (i,)
+        df.to_csv(f"{temp_dir}/df_{index_value}.csv", index=False)
+
+def determine_series_names(all_input_dfs):
+    count = len(all_input_dfs)
+    current = 0
+    series_coc_count = 1
+    multiplier = 0
+    series_names = []
+    while current <= count:
+        if current == 14:
+            series_names.append("New Years")
+        else:
+            series_names.append("Series " + str(series_coc_count+(5*multiplier)))
+            series_coc_count += 1
+            if series_coc_count >= 6:
+                series_coc_count = 1
+                series_names.append("COC")
+                current += 1
+                multiplier += 1
+        current += 1
+    return series_names
 
 
-# for each table in all_dfs, add to merged final
-# final_df = pd.DataFrame()
-for i, df in enumerate(all_dfs):
-
-    nth_row = 0
-    contestest_names = df.iloc[nth_row]
-    series_contestests = [value for value in contestest_names if value not in ['Task', 'Description']]
-    print(i, series_contestests) 
-
-    for j in range(1, len(df.index)):
-        print(j, df.iloc[j])
-
-    # df.to_csv("df_"+str(i), index=False)
-    # TODO: make this .csv
-
-# print(final_df.head())
-
-# Season, Episode, Task Number, Contestant, Score
+if __name__ == "__main__":
+    dir_path = "temp_csvs"
+    taskmaster_dfs = scrape_tm_details_to_dfs()
+    build_temp_csvs(all_dfs=taskmaster_dfs, temp_dir=dir_path)
+    series_names = determine_series_names(all_input_dfs=taskmaster_dfs)
+    for i, filename in enumerate(os.listdir(dir_path)):
+        f = os.path.join(dir_path, filename)
+        if os.path.isfile(f):
+            parse_taskmaster_csv(infile=f, series_name=series_names[i])
