@@ -50,13 +50,24 @@ def determine_series_names(all_input_dfs):
         current += 1
     return series_names
 
+def create_final_raw_csv(dir_path_to_temp_csvs, dir_path_final_csvs):
+    taskmaster_dfs = scrape_tm_details_to_dfs()
+    build_temp_csvs(all_dfs=taskmaster_dfs, temp_dir=dir_path_to_temp_csvs)
+    series_names = determine_series_names(all_input_dfs=taskmaster_dfs)
+    for i, filename in enumerate(os.listdir(dir_path_to_temp_csvs)):
+        f = os.path.join(dir_path_to_temp_csvs, filename)
+        if os.path.isfile(f):
+            parse_taskmaster_csv(infile=f, series_name=series_names[i], result_path=dir_path_final_csvs)
+
+def merge_final_dataset(inpath_final_individual_csvs):
+    arr = os.listdir(inpath_final_individual_csvs)
+    os.chdir(inpath_final_individual_csvs)
+    df = pd.concat(map(pd.read_csv, [val for val in arr if val.endswith(".csv")]), ignore_index=True)
+    os.chdir("..")
+    df.to_csv("Taskmaster Full Dataset.csv")
 
 if __name__ == "__main__":
-    dir_path = "temp_csvs"
-    taskmaster_dfs = scrape_tm_details_to_dfs()
-    build_temp_csvs(all_dfs=taskmaster_dfs, temp_dir=dir_path)
-    series_names = determine_series_names(all_input_dfs=taskmaster_dfs)
-    for i, filename in enumerate(os.listdir(dir_path)):
-        f = os.path.join(dir_path, filename)
-        if os.path.isfile(f):
-            parse_taskmaster_csv(infile=f, series_name=series_names[i])
+    dir_path_to_temp_csvs="temp_csvs"
+    dir_path_final_csvs="final_season_csvs"
+    create_final_raw_csv(dir_path_to_temp_csvs, dir_path_final_csvs)
+    merge_final_dataset(inpath_final_individual_csvs=dir_path_final_csvs)

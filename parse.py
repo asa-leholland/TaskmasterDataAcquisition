@@ -1,5 +1,5 @@
 import pandas as pd
-
+import re
 # series name
 provided_series = "Series 1"
 
@@ -61,12 +61,14 @@ def get_task_score(contestant, task_description, complete_df):
 
         if score in score_translations:
             score = score_translations[score]
+        elif re.match(r'(\d \d)', score):
+            score = int(score[0])
         else:
             print("Error: unhandled score value:", score, task_description)
 
     return score
 
-def generate_end_csv(task_list, contestant_names, provided_series, complete_df):
+def generate_end_csv(task_list, contestant_names, provided_series, complete_df, result_path):
 
 
 
@@ -98,9 +100,9 @@ def generate_end_csv(task_list, contestant_names, provided_series, complete_df):
 
 
     final_result_df = pd.DataFrame(final_task_list)
-    final_result_df.to_csv(f"{provided_series} Task Data.csv")
+    final_result_df.to_csv(f"{result_path}/{provided_series} Task Data.csv")
 
-def parse_taskmaster_csv(infile, series_name):
+def parse_taskmaster_csv(infile, series_name, result_path):
 
     # episode names
     df = pd.read_csv(infile, skiprows=1)
@@ -118,7 +120,7 @@ def parse_taskmaster_csv(infile, series_name):
     task_descriptions = task_descriptions[~task_descriptions.str.contains(r'^[^a-z]*$')]
     series_task_list = task_descriptions.tolist()
 
-    generate_end_csv(task_list=series_task_list, contestant_names=series_contestant_names, provided_series=series_name, complete_df=full_df)
+    generate_end_csv(task_list=series_task_list, contestant_names=series_contestant_names, provided_series=series_name, complete_df=full_df, result_path=result_path)
 
 
 # parse_taskmaster_csv(infile=infile_name, series_name=provided_series)
