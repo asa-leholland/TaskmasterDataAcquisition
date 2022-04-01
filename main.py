@@ -62,7 +62,11 @@ for i, df in enumerate(all_dfs):
     series_contestests = [value for value in contestest_names if value not in ['Task', 'Description']]
     print(i, series_contestests) 
 
+    for j in range(1, len(df.index)):
+        print(j, df.iloc[j])
+
     # df.to_csv("df_"+str(i), index=False)
+    # TODO: make this .csv
 
 # print(final_df.head())
 
