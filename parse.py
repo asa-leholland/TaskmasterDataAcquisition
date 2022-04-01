@@ -19,22 +19,35 @@ print(contestant_names)
 # task descriptions
 task_descriptions = df['Description'][df['Description'].notna()]
 task_descriptions = task_descriptions[~task_descriptions.str.contains(r'^[^a-z]*$')]
-task_list = task_descriptions['Description'].tolist()
+task_list = task_descriptions.tolist()
+print(task_list)
 
-# 
 
 # put it all together
-with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-    print(df)
+# with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+#     print(df)
 
 
+def get_task_score(contestant, task_description):
+    score = 0
+    try:
+        # contestant_df = df[[contestant, "Description"]]
+        # print(contestant_df)
+        potential_task_df = df[df["Description"].str.match(task_description)][contestant]
+        print(potential_task_df)
+    except:
+        print('errrrror')
 
+    return score
 
 # contestant_names = df.columns
+print(get_task_score(contestant="Romesh Ranganathan", task_description="Prize: Most satisfying item."))
 
 # print(df_episode_names[mask].sample(3))
 
 
+
+# put it all together
 # Season, Episode, Task Description, Contestant, Score
 final_task_list = []
 
